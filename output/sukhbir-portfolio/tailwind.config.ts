@@ -1,0 +1,25 @@
+import type { Config } from 'tailwindcss'
+const config: Config = {
+  darkMode: ['class'],
+  content: ['./src/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+        muted: 'rgb(var(--muted) / <alpha-value>)',
+        border: 'rgb(var(--border) / <alpha-value>)',
+        card: 'rgb(var(--card) / <alpha-value>)'
+      },
+      boxShadow: {
+        glow: '0 0 0 1px rgba(96,165,250,.18), 0 0 32px rgba(59,130,246,.18)',
+        neon: '0 0 40px rgba(99,102,241,.24)'
+      },
+      backgroundImage: {
+        grid: 'linear-gradient(to right, rgba(148,163,184,.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,.12) 1px, transparent 1px)'
+      }
+    }
+  },
+  plugins: []
+}
+export default config

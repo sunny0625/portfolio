@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --background: 250 250 250;
+  --foreground: 15 23 42;
+  --muted: 71 85 105;
+  --border: 15 23 42;
+  --card: 255 255 255;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: 10 10 10;
+  --foreground: 241 245 249;
+  --muted: 148 163 184;
+  --border: 148 163 184;
+  --card: 15 23 42;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,.16), transparent 25%),
+    radial-gradient(circle at top right, rgba(168,85,247,.14), transparent 22%),
+    rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color .3s ease-in-out, color .3s ease-in-out;
+}
+.dark body {
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,.2), transparent 28%),
+    radial-gradient(circle at top right, rgba(147,51,234,.18), transparent 24%),
+    #0a0a0a;
+}
+::selection { background: rgba(99,102,241,.35); }
+.glass { @apply border border-white/10 bg-white/5 backdrop-blur-xl shadow-glow; }
+.light .glass, :root .glass { @apply border-slate-900/10 bg-white/80 shadow-lg; }
+.section-shell {
+  @apply relative overflow-hidden rounded-3xl border px-6 py-8 md:px-8 md:py-10;
+  border-color: rgba(var(--border), .12);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+}
+.dark .section-shell { background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); }
+.light .section-shell { background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(248,250,252,.92)); }
+.grid-bg { background-size: 42px 42px; }
+.text-gradient {
+  background: linear-gradient(90deg, #60a5fa 0%, #818cf8 45%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.container-width { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+.anchor-offset { scroll-margin-top: 100px; }
