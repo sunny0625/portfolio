@@ -5,6 +5,9 @@ node_modules/
 .next/
 out/
 
+# accidental nested project copies / exports
+output/
+
 # production
 build/
 dist/
