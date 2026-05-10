@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Analytics } from "@vercel/analytics/next"
 
+<Analytics />
 export const metadata: Metadata = {
   title: 'Sukhbir Singh | DevOps Engineer Portfolio',
   description: 'Premium developer portfolio for Sukhbir Singh — DevOps Engineer, Full Stack Developer, and cloud-focused builder.',

@@ -88,6 +88,13 @@ export default function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [command, setCommand] = useState('')
   const [output, setOutput] = useState<string>(commands.help)
+  const [contactStatus, setContactStatus] = useState<{ type: 'idle' | 'sending' | 'success' | 'error'; message?: string }>({ type: 'idle' })
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
 
   const commandKeys = useMemo(() => Object.keys(commands), [])
 
@@ -372,19 +379,94 @@ export default function Portfolio() {
               <form className="grid gap-4 rounded-[28px] border border-white/10 bg-white/5 p-6" onSubmit={(e) => { e.preventDefault(); alert('Thanks for reaching out — message captured successfully.'); }}>
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="grid gap-2 text-sm text-foreground/72">Name
-                    <input required className="h-12 rounded-2xl border border-white/10 bg-black/20 px-4 outline-none focus:border-blue-400/40 dark:bg-white/5 light:bg-slate-900/5" placeholder="Your name" />
+                    <input
+                      required
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm((v) => ({ ...v, name: e.target.value }))}
+                      className="h-12 rounded-2xl border border-white/10 bg-black/20 px-4 outline-none focus:border-blue-400/40 dark:bg-white/5 light:bg-slate-900/5"
+                      placeholder="Your name"
+                    />
                   </label>
                   <label className="grid gap-2 text-sm text-foreground/72">Email
-                    <input type="email" required className="h-12 rounded-2xl border border-white/10 bg-black/20 px-4 outline-none focus:border-blue-400/40 dark:bg-white/5 light:bg-slate-900/5" placeholder="you@example.com" />
+                    <input
+                      type="email"
+                      required
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm((v) => ({ ...v, email: e.target.value }))}
+                      className="h-12 rounded-2xl border border-white/10 bg-black/20 px-4 outline-none focus:border-blue-400/40 dark:bg-white/5 light:bg-slate-900/5"
+                      placeholder="you@example.com"
+                    />
                   </label>
                 </div>
                 <label className="grid gap-2 text-sm text-foreground/72">Subject
-                  <input required className="h-12 rounded-2xl border border-white/10 bg-black/20 px-4 outline-none focus:border-blue-400/40 dark:bg-white/5 light:bg-slate-900/5" placeholder="Opportunity, collaboration, or project" />
+                  <input
+                    required
+                    value={contactForm.subject}
+                    onChange={(e) => setContactForm((v) => ({ ...v, subject: e.target.value }))}
+                    className="h-12 rounded-2xl border border-white/10 bg-black/20 px-4 outline-none focus:border-blue-400/40 dark:bg-white/5 light:bg-slate-900/5"
+                    placeholder="Opportunity, collaboration, or project"
+                  />
                 </label>
                 <label className="grid gap-2 text-sm text-foreground/72">Message
-                  <textarea required rows={6} className="rounded-3xl border border-white/10 bg-black/20 px-4 py-3 outline-none focus:border-blue-400/40 dark:bg-white/5 light:bg-slate-900/5" placeholder="Tell me about the role or project." />
+                  <textarea
+                    required
+                    rows={6}
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm((v) => ({ ...v, message: e.target.value }))}
+                    className="rounded-3xl border border-white/10 bg-black/20 px-4 py-3 outline-none focus:border-blue-400/40 dark:bg-white/5 light:bg-slate-900/5"
+                    placeholder="Tell me about the role or project."
+                  />
                 </label>
-                <button className="inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 to-violet-500 px-6 font-semibold text-white transition hover:scale-[1.01]">Send Message</button>
+                {contactStatus.type !== 'idle' && (
+                  <div
+                    className={[
+                      'rounded-2xl border px-4 py-3 text-sm',
+                      contactStatus.type === 'success'
+                        ? 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200'
+                        : contactStatus.type === 'error'
+                          ? 'border-rose-400/25 bg-rose-500/10 text-rose-200'
+                          : 'border-white/10 bg-white/5 text-foreground/75'
+                    ].join(' ')}
+                    role={contactStatus.type === 'error' ? 'alert' : 'status'}
+                  >
+                    {contactStatus.type === 'sending'
+                      ? 'Sending...'
+                      : contactStatus.message}
+                  </div>
+                )}
+                <button
+                  disabled={contactStatus.type === 'sending'}
+                  className="inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 to-violet-500 px-6 font-semibold text-white transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+                  onClick={async (e) => {
+                    e.preventDefault()
+                    if (contactStatus.type === 'sending') return
+                    setContactStatus({ type: 'sending' })
+                    try {
+                      const res = await fetch('/api/send', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(contactForm)
+                      })
+
+                      const data = (await res.json().catch(() => ({}))) as any
+                      if (!res.ok) {
+                        const message =
+                          typeof data?.error === 'string'
+                            ? data.error
+                            : data?.error?.message || 'Failed to send message'
+                        setContactStatus({ type: 'error', message })
+                        return
+                      }
+
+                      setContactStatus({ type: 'success', message: 'Message sent successfully. I will get back to you soon.' })
+                      setContactForm({ name: '', email: '', subject: '', message: '' })
+                    } catch (err) {
+                      setContactStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to send message' })
+                    }
+                  }}
+                >
+                  {contactStatus.type === 'sending' ? 'Sending…' : 'Send Message'}
+                </button>
               </form>
             </div>
           </div>
